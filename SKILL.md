@@ -1,11 +1,11 @@
 ---
-name: antivirus-clamav-scan
+name: free-shield
 category: devops
 tags: [antivirus, clamav, malware, virus-definitions, security, scan, clamscan, freshclam]
-description: Scan files/folders for malware with the free ClamAV engine.
+description: Free, on-demand virus scan for your PC using the ClamAV engine and its free definitions.
 ---
 
-# Antivirus Scan with ClamAV
+# FreeShield - On-Demand Virus Scan (ClamAV)
 
 On-demand malware scanning using the **stock ClamAV engine** (`clamscan` + `freshclam`).
 The virus *definitions* are the key question - ClamAV's official mirrors at
@@ -68,10 +68,10 @@ clamscan --infected /tmp/eicar.com
 
 ## The Wrapper Script
 
-`scripts/clamav_scan.py` is a thin, friendly wrapper around clamscan:
+`scripts/free_shield_scan.py` is a thin, friendly wrapper around clamscan:
 
 ```
-python3 clamav_scan.py <target_file_or_dir> [options]
+python3 free_shield_scan.py <target_file_or_dir> [options]
 ```
 
 Options:
@@ -92,7 +92,7 @@ It auto-runs `ensure_clamav()` (attempts apt install if missing), updates defini
 Running from WSL, scan the Windows filesystem directly by pointing at `/mnt/c/...`:
 
 ```
-python3 clamav_scan.py /mnt/c/Users/<user>/Downloads --no-update
+python3 free_shield_scan.py /mnt/c/Users/<user>/Downloads --no-update
 ```
 
 ClamAV also ships native Windows builds; the wrapper is engine-agnostic if you swap the

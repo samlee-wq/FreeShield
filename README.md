@@ -1,28 +1,42 @@
-# ClamAV PC Scanner
+# FreeShield
 
-A free, open-source, on-demand virus scanner for your PC. It uses the **ClamAV** engine
-and its **officially maintained virus definitions** (3.6+ million signatures, updated
-continuously) to scan any file or folder for malware. Works on Windows (via WSL), Linux,
-and macOS. No subscription. No cloud upload. Your files never leave your machine.
+A free, open-source, on-demand virus scanner for your PC. Scan any file or folder for
+malware instantly - no signup, no subscription, no cloud upload. Your files never leave
+your machine.
 
-> Quick start: install ClamAV, run `clamav_scan.py <path>`, it auto-updates definitions
-> and reports CLEAN or INFECTIONS FOUND with a clear exit code.
+> Quick start: `python3 free_shield_scan.py <path>` - it auto-updates definitions and
+> reports CLEAN or INFECTIONS FOUND with a clear exit code.
 
 ---
 
-## Why ClamAV?
+## What is FreeShield?
 
-The hardest part of any antivirus is the **virus definitions** - the ever-growing database
-of malware signatures. Commercial vendors keep theirs proprietary. ClamAV publishes its
-full database for free under an open license, and it is updated several times a day.
+FreeShield is a thin, friendly wrapper around the industry-standard **ClamAV** antivirus
+engine. It takes the hard part of running a scanner yourself - keeping the virus
+definitions current and interpreting the output - and makes it a single command.
+
+- Free and open source (MIT)
+- Works on Windows (via WSL), Linux, and macOS
+- On-demand: scan a suspect download, a USB drive, a folder you were sent, or a machine
+  you don't trust
+- Private: everything runs locally, nothing is uploaded
+- No account, no license, no subscription
+
+---
+
+## Powered by ClamAV
+
+The virus definitions are the hardest part of any antivirus - the ever-growing database of
+malware signatures. Commercial vendors keep theirs proprietary. ClamAV publishes its full
+database for free under an open license, updated several times a day.
+
+FreeShield wraps ClamAV's official engine and its officially maintained definition database.
+It does not re-invent detection - it makes ClamAV's signatures easy to use.
 
 - Definitions live at `https://database.clamav.net` (free, open, continuously updated)
 - 3.28M+ signatures in `main`, 355k+ in `daily`, plus `bytecode`
-- Detects the same families that commercial engines detect
-- Truly free and open source (ClamAV is GPL; signatures are open)
-
-This project is a small, friendly wrapper around the stock `clamscan` engine. It does not
-re-invent detection - it makes the official signatures easy to use.
+- Detects the same families commercial engines detect
+- ClamAV is GPL; signatures are open to all users
 
 ---
 
@@ -30,11 +44,11 @@ re-invent detection - it makes the official signatures easy to use.
 
 ClamAV's official signature mirrors:
 
-| Database    | Size     | Signatures | Update cadence |
-|-------------|----------|------------|----------------|
-| `main.cvd`  | ~85-90MB | 3,287,027  | infrequent, large |
-| `daily.cvd` | ~23MB    | 355,622    | several times a day |
-| `bytecode.cvd` | ~276KB | 80     | as needed |
+| Database       | Size     | Signatures | Update cadence      |
+|----------------|----------|------------|---------------------|
+| `main.cvd`     | ~85-90MB | 3,287,027  | infrequent, large   |
+| `daily.cvd`    | ~23MB    | 355,622    | several times a day |
+| `bytecode.cvd` | ~276KB   | 80         | as needed           |
 
 `freshclam` pulls these automatically. To test the source is reachable (note: use **GET**,
 not HEAD - HEAD returns 403):
@@ -69,7 +83,7 @@ brew install clamav
 When running from WSL, the script can scan the Windows filesystem directly:
 
 ```bash
-python3 clamav_scan.py /mnt/c/Users/<user>/Downloads
+python3 free_shield_scan.py /mnt/c/Users/<user>/Downloads
 ```
 
 ### 2. Update definitions
@@ -92,28 +106,28 @@ You should see `up-to-date` or `updated` plus `Database test passed`. Definition
 
 ```bash
 # scan a single file
-python3 clamav_scan.py ~/Downloads/suspect.exe
+python3 free_shield_scan.py ~/Downloads/suspect.exe
 
 # scan a folder recursively
-python3 clamav_scan.py ~/Downloads
+python3 free_shield_scan.py ~/Downloads
 
 # quick mode - skip files >100MB
-python3 clamav_scan.py /mnt/c/Users/<user> --quick
+python3 free_shield_scan.py /mnt/c/Users/<user> --quick
 
 # move infected files into a quarantine folder instead of leaving them
-python3 clamav_scan.py /mnt/c/Users/<user> --quarantine-dir ~/clamav-quarantine
+python3 free_shield_scan.py /mnt/c/Users/<user> --quarantine-dir ~/free-shield-quarantine
 
 # skip updating definitions (use existing ones)
-python3 clamav_scan.py /mnt/c/Users/<user>/Downloads --no-update
+python3 free_shield_scan.py /mnt/c/Users/<user>/Downloads --no-update
 
 # machine-readable JSON output
-python3 clamav_scan.py /mnt/c/Users/<user>/Downloads --json
+python3 free_shield_scan.py /mnt/c/Users/<user>/Downloads --json
 ```
 
 ### 4. Verify it works (EICAR test file)
 
-EICAR is the internationally recognized benign malware-detection test string. If your
-scanner flags it, detection is working:
+EICAR is the internationally recognized benign malware-detection test string. If FreeShield
+flags it, detection is working:
 
 ```bash
 printf 'X5O!P%%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*' > /tmp/eicar.com
@@ -129,7 +143,7 @@ clamscan --infected /tmp/eicar.com
 |------|-------------|
 | `target` | File or directory to scan (required) |
 | `--quick` | Skip files larger than 100MB (faster on big media) |
-| `--quarantine-dir DIR` | Move infected files to a quarantine folder (default `~/clamav-quarantine`) |
+| `--quarantine-dir DIR` | Move infected files to a quarantine folder (default `~/free-shield-quarantine`) |
 | `--no-update` | Skip the definition update step |
 | `--exclude-ext .iso,.mp4` | Comma-separated extensions to skip |
 | `--json` | Print findings + summary as JSON |
@@ -140,7 +154,7 @@ clamscan --infected /tmp/eicar.com
 
 ## How it works
 
-The wrapper (`scripts/clamav_scan.py`):
+The wrapper (`scripts/free_shield_scan.py`):
 
 1. Ensures ClamAV is installed (attempts `apt install` if missing)
 2. Updates definitions via `freshclam` (unless `--no-update`)
@@ -155,19 +169,19 @@ The wrapper (`scripts/clamav_scan.py`):
 ## FAQ
 
 **Q: Is this really a full antivirus?**
-It is a real, signature-based on-demand scanner using ClamAV's official engine and
+It is a real, signature-based on-demand scanner powered by ClamAV's official engine and
 definitions. It is NOT a resident shield that scans every file the moment it is written.
 It's a "scan this now" tool - great for cleaning a suspect download, a USB drive, a folder
 you were sent, or a machine you don't trust. For always-on protection, pair it with the
-built-in OS protection (Windows Security, etc.) and use this for on-demand deep scans.
+built-in OS protection (Windows Security, etc.) and use FreeShield for on-demand deep scans.
 
 **Q: Where do the virus definitions come from? Are they free?**
 ClamAV's official mirrors at `https://database.clamav.net`. Yes, 100% free and open. They
 are updated several times daily.
 
 **Q: Can I scan my Windows drive?**
-Yes. Run from WSL and point at `/mnt/c/...`. The script has no opinion about the
-filesystem, it just scans whatever path you give it.
+Yes. Run from WSL and point at `/mnt/c/...`. FreeShield has no opinion about the filesystem,
+it just scans whatever path you give it.
 
 **Q: It found a virus. What do I do?**
 Run with `--quarantine-dir` to move the file aside safely, then delete or restore it after
@@ -189,18 +203,18 @@ scans locally and never sends your files anywhere.
 No. ClamAV and its signatures are free and open source. There is nothing to register.
 
 **Q: How current are the definitions?**
-`daily.cvd` updates several times a day; `main.cvd` less frequently. The wrapper updates at
+`daily.cvd` updates several times a day; `main.cvd` less frequently. FreeShield updates at
 the start of every scan (unless you pass `--no-update`).
 
 ---
 
 ## License
 
-The wrapper script is MIT licensed (see `LICENSE`). ClamAV is GPLv2 and its signature
+The FreeShield wrapper is MIT licensed (see `LICENSE`). ClamAV is GPLv2 and its signature
 database is open to all users. See the [ClamAV project](https://www.clamav.net/) for details.
 
 ## Credits
 
 - [ClamAV](https://www.clamav.net/) - the antivirus engine and its signature database
-- The wrapper streamlines the stock `clamscan`/`freshclam` workflow and handles the common
+- FreeShield streamlines the stock `clamscan`/`freshclam` workflow and handles the common
   operational gotchas (freshclam log lock, GET-vs-HEAD on the mirror, archive-stream dedup).
