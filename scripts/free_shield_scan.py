@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-clamav_scan.py - On-demand virus scan using the ClamAV engine (stock clamscan + freshclam).
+free_shield_scan.py - On-demand virus scan using the ClamAV engine (stock clamscan + freshclam).
 
 The virus DEFINITIONS come from ClamAV's official mirrors (https://database.clamav.net),
 which are free, open-source, and updated continuously (main ~3.3M sigs, daily ~350k sigs).
@@ -8,7 +8,7 @@ This script is a thin, friendly wrapper: it updates definitions, then scans file
 and reports clearly. Works in WSL (can scan /mnt/c to cover the Windows filesystem).
 
 Usage:
-    python3 clamav_scan.py <target_path> [--quick] [--quarantine-dir DIR] [--no-update]
+    python3 free_shield_scan.py <target_path> [--quick] [--quarantine-dir DIR] [--no-update]
                            [--exclude-ext .docx,.xlsx] [--json]
 
 Exit codes:
